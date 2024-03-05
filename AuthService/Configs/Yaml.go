@@ -5,6 +5,8 @@ import (
 	"log"
 )
 
+// Инициализация yaml файла
+
 func InitYamlConfig() {
 	loadYamlPath()
 	doesYamlExistCheck()

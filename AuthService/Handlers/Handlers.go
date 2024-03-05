@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+// Контроллер запроса авторизации
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Error(w, "Только POST метод разрешён", http.StatusMethodNotAllowed)
@@ -40,6 +41,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// Контроллер запроса верификации
 func VerifyHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Error(w, "Только POST метод разрешён", http.StatusMethodNotAllowed)

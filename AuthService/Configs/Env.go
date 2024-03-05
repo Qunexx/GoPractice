@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Инициализация Env файла
 var EnvConfigs *envConfigs
 
 func InitEnvConfig() {

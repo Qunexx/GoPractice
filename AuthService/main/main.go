@@ -14,7 +14,7 @@ func main() {
 	http.HandleFunc("/auth/login", Handlers.LoginHandler)
 	http.HandleFunc("/auth/verify", Handlers.VerifyHandler)
 
-	// Регистрация пользователя для теста
+	//Регистрация пользователя для теста
 	//salt, _ := Auth.GenerateSalt(16)
 	//Auth.RegisterUser("user", "user", "", salt)
 
