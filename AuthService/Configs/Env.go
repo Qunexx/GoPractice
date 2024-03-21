@@ -14,8 +14,9 @@ func InitEnvConfig() {
 }
 
 type envConfigs struct {
-	JwtToken   string `mapstructure:"JWT_TOKEN"`
-	ServerPort string `mapstructure:"LOCAL_SERVER_PORT"`
+	JwtToken    string `mapstructure:"JWT_TOKEN"`
+	ServerPort  string `mapstructure:"LOCAL_SERVER_PORT"`
+	LoggerLevel string `mapstructure:"Logger_Level"`
 }
 
 func loadEnvVariables() (config *envConfigs) {
