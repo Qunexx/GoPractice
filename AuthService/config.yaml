@@ -1,9 +1,11 @@
 users:
-    - email: Admin@admin.ru
+    - email: admin@admin.ru
       login: admin
-      password: 6d38fa84f1cb3f9b3b343a6e2f24687df8373b3739c8498eb5ee320b4ff504e28f2b181bd45f3d5d551420d131b2ec97041d10a972468389afc194a82e27cc34
-      salt: f5a1f203c77e86d6ca4c5842d6c41e37
+      password: 7f672eed3b871472c515302c0ad29ec415872441f5fdcbd2674eaf680b0a18e01ef23c8ffb9d2603b6ebfeef63be1c6126b0d6cfff2603fda0aa492ddb1579ee
+      role: viewer,administrator
+      salt: efd48d9de6c11dcb774e965f73f3f328
     - email: ""
-      login: user
-      password: 2575aed894c3efcf8df190de6d25d69fe44ad38728b92e2cc63f822500c422934924ffef4700758a45b28a994fd3f1b4fef4615f60feed20a6eeb721d9421ddd
-      salt: b5c78d7a4e2c5c3c32109484433897af
+      login: user500
+      password: 24e78ed9da0a8c014302fe89188dbf3366cc7cad748962199af4ee443f492bab41219db488e263753df7750a54f0a6406dbb4460303fb9ced414cc7a3ccb9e17
+      role: viewer
+      salt: ad4d93c60b17fdc94f52e5d32a23cce5

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/spf13/viper"
@@ -37,10 +38,10 @@ func RegisterUser(username, password, email string, salt []byte) error {
 	if err := viper.UnmarshalKey("users", &users); err != nil {
 		return err
 	}
-
 	user := map[string]string{
 		"login":    username,
 		"email":    email,
+		"role":     "viewer",
 		"password": encryptedPassword,
 		"salt":     hex.EncodeToString(salt),
 	}
@@ -292,4 +293,82 @@ func getLoginFromToken(tokenString string) (string, error) {
 	} else {
 		return "", fmt.Errorf("Невозможно обработать токен")
 	}
+}
+
+// Функция установки роли пользователю
+func SetUserRole(login string) error {
+	Configs.InitYamlConfig()
+
+	var users []map[string]string
+	if err := viper.UnmarshalKey("users", &users); err != nil {
+		return err
+	}
+
+	found := false
+	for i, user := range users {
+		if user["login"] == login {
+			// Добавляем роль, только если она уже не указана
+			currentRoles := strings.Split(user["role"], ",")
+			if !roleContains(currentRoles, "administrator") {
+				currentRoles = append(currentRoles, "administrator")
+				users[i]["role"] = strings.Join(currentRoles, ",")
+			}
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		return fmt.Errorf("Логин '%s' не найден", login)
+	}
+
+	viper.Set("users", users)
+	if err := viper.WriteConfigAs("config.yaml"); err != nil {
+		return fmt.Errorf("Не удалось сохранить конфигурацию: %s", err)
+	}
+
+	fmt.Println("Роль успешно добавлена.")
+	return nil
+}
+
+// Проверка наличия роли в массиве строк файла config.yaml
+func roleContains(slice []string, item string) bool {
+	for _, a := range slice {
+		if a == item {
+			return true
+		}
+	}
+	return false
+}
+
+func getUserRole(AccessTokenStr string) string {
+	Configs.InitYamlConfig()
+	var users []map[string]string
+	if err := viper.UnmarshalKey("users", &users); err != nil {
+		return ""
+	}
+
+	login, err := getLoginFromToken(AccessTokenStr)
+	if err == nil {
+		for _, user := range users {
+			if user["login"] == login {
+				return user["role"]
+			}
+		}
+	}
+	return "Роль пользователя не найдена"
+}
+
+type UserInfo struct {
+	Email string `json:"email"`
+	Role  string `json:"role"`
+}
+
+func GetUserInfo(accessToken string) (*UserInfo, error) {
+	email := GetUserEmail(accessToken)
+	role := getUserRole(accessToken)
+	if email == "" || role == "" {
+		return nil, fmt.Errorf("не удалось получить данные пользователя")
+	}
+	return &UserInfo{Email: email, Role: role}, nil
 }

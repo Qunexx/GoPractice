@@ -25,6 +25,11 @@ func main() {
 	//salt, _ := Auth.GenerateSalt(16)
 	//Auth.RegisterUser("user500", "user", "", salt)
 
+	////Установка роли администратора по логину
+	//if err := Auth.SetUserRole("admin"); err != nil {
+	//	fmt.Println("Error", err)
+	//}
+
 	fmt.Println("Сервер запущен")
 	http.ListenAndServe(Configs.EnvConfigs.ServerPort, mux)
 }

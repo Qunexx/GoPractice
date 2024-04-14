@@ -2,6 +2,7 @@ package Handlers
 
 import (
 	"Qunexx/AuthService/Auth"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -53,7 +54,7 @@ func VerifyHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Акссес токен недействителен", http.StatusUnauthorized)
 		return
 	}
-	fmt.Println("Проферка рефреш токена")
+	fmt.Println("Проверка рефреш токена")
 	refreshTokenCookie, err := r.Cookie("refresh_token")
 	if err != nil {
 		http.Error(w, "Рефреш токен недействителен", http.StatusUnauthorized)
@@ -65,8 +66,14 @@ func VerifyHandler(w http.ResponseWriter, r *http.Request) {
 			expired, err := Auth.IsTokenExpired(accessTokenCookie.Value)
 			if !expired && err == nil {
 				fmt.Println("Статус ОК")
+				userInfo, err := Auth.GetUserInfo(accessTokenCookie.Value)
+				if err != nil {
+					http.Error(w, "Не удалось получить информацию о пользователе", http.StatusInternalServerError)
+					return
+				}
 
-				w.Write([]byte(Auth.GetUserEmail(accessTokenCookie.Value)))
+				responseData, err := json.Marshal(userInfo)
+				w.Write(responseData)
 			} else {
 				valid, _ := Auth.IsTokenExpired(refreshTokenCookie.Value)
 				if valid == true {
