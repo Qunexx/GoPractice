@@ -21,9 +21,9 @@ func main() {
 	mux.Handle("/auth/login", Middleware.TraceMiddleware(logger)(Middleware.RecoveryMiddleware(logger)(Middleware.LoggingMiddleware(logger)(http.HandlerFunc(Handlers.LoginHandler)))))
 	mux.Handle("/auth/verify", Middleware.TraceMiddleware(logger)(Middleware.RecoveryMiddleware(logger)(Middleware.LoggingMiddleware(logger)(http.HandlerFunc(Handlers.VerifyHandler)))))
 
-	//Регистрация пользователя для теста
+	////Регистрация пользователя для теста
 	//salt, _ := Auth.GenerateSalt(16)
-	//Auth.RegisterUser("user", "user", "", salt)
+	//Auth.RegisterUser("user500", "user", "", salt)
 
 	fmt.Println("Сервер запущен")
 	http.ListenAndServe(Configs.EnvConfigs.ServerPort, mux)

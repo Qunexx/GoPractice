@@ -2,10 +2,12 @@ package Logger
 
 import (
 	"Qunexx/AuthService/Configs"
+	"fmt"
 	"github.com/TheZeroSlave/zapsentry"
 	"github.com/getsentry/sentry-go"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"os"
 	"time"
 )
 
@@ -51,18 +53,30 @@ func SetupLogger() *zap.Logger {
 	config := zap.NewProductionConfig()
 	config.Level = zap.NewAtomicLevelAt(logLevel)
 
-	logger, _ := config.Build()
+	currentDate := time.Now()
+	logg := fmt.Sprintf("./Logs/%s.log", currentDate.Format("2006-01-02"))
+
+	file, err := os.OpenFile(logg, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		panic("Не удалось открыть файл logs.txt" + err.Error())
+	}
+	fileEncoder := zapcore.NewJSONEncoder(config.EncoderConfig)
+	fileCore := zapcore.NewCore(fileEncoder, zapcore.AddSync(file), config.Level)
+
+	logger, err := config.Build()
+	if err != nil {
+		panic("Ошибка сборки логгера " + err.Error())
+	}
 	defer logger.Sync()
 
-	core, err := zapsentry.NewCore(zapsentry.Configuration{
+	sentryCore, err := zapsentry.NewCore(zapsentry.Configuration{
 		Level: zapcore.ErrorLevel, // Отправлять в Sentry сообщения уровня Error и выше
 	}, zapsentry.NewSentryClientFromClient(sentry.CurrentHub().Client()))
 	if err != nil {
-		panic("Failed to create zapsentry core: " + err.Error())
+		panic("Ошибка создания Zap/Sentry: " + err.Error())
 	}
 
-	// Создание нового логгера с добавлением Sentry core
-	logger = zap.New(zapcore.NewTee(logger.Core(), core))
+	logger = zap.New(zapcore.NewTee(logger.Core(), sentryCore, fileCore))
 
 	return logger
 }
